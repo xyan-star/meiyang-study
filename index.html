@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美羊AI学习力系统 - 功能导览</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #409EFF;
+  --primary-light: #66B1FF;
+  --primary-dark: #3A8EE6;
+  --primary-bg: #ECF5FF;
+  --success: #67C23A;
+  --warning: #E6A23C;
+  --danger: #F56C6C;
+  --text: #303133;
+  --text-2: #606266;
+  --text-3: #909399;
+  --text-4: #C0C4CC;
+  --border: #DCDFE6;
+  --border-l: #E4E7ED;
+  --border-xl: #EBEEF5;
+  --bg: #F0F2F5;
+  --bg-white: #FFFFFF;
+  --shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+}
+
+html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; font-size: 16px; }
+body { overflow-x: hidden; overflow-y: auto; }
+
+/* ===== App Shell (mobile-first) ===== */
+.app {
+  height: 100dvh; display: flex; flex-direction: column;
+  max-width: 100%; margin: 0 auto;
+  background: var(--bg);
+}
+
+/* ===== Header ===== */
+.header {
+  background: linear-gradient(135deg, #2B3A4A 0%, #304156 100%);
+  display: flex; align-items: center; padding: 0 16px;
+  height: 56px; flex-shrink: 0; z-index: 20; gap: 8px;
+}
+.header .back-btn {
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  width: 32px; height: 32px; border-radius: 6px; font-size: 16px;
+  cursor: pointer; display: none; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s;
+}
+.header .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.header .back-btn.show { display: flex; }
+
+.header .title-area { flex: 1; min-width: 0; }
+.header .title-area .main-title { font-size: 18px; font-weight: 600; color: #fff; }
+.header .title-area .sub-title { font-size: 13px; color: rgba(255,255,255,0.5); display: none; }
+.header .title-area .sub-title.show { display: block; }
+
+.header .search-btn {
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  width: 32px; height: 32px; border-radius: 6px; font-size: 15px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s;
+}
+.header .search-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.header .header-link-btn {
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  height: 32px; border-radius: 6px; font-size: 13px;
+  cursor: pointer; display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0; transition: all 0.2s; text-decoration: none; padding: 0 8px;
+}
+.header .header-link-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* ===== Search ===== */
+.search-bar {
+  background: var(--bg-white); padding: 8px 16px; display: none; flex-shrink: 0;
+  border-bottom: 1px solid var(--border-xl);
+}
+.search-bar.show { display: block; animation: fadeIn 0.15s ease; }
+.search-bar input {
+  width: 100%; padding: 8px 12px 8px 36px;
+  border: 1px solid var(--border); border-radius: 6px;
+  font-size: 14px; outline: none; transition: all 0.2s;
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23909399' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+}
+.search-bar input:focus { border-color: var(--primary); background-color: #fff; }
+
+/* ===== Main ===== */
+.main {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0;
+}
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ===== Page ===== */
+.page { padding: 16px; max-width: 640px; margin: 0 auto; }
+@media (min-width: 640px) { .page { padding: 20px; max-width: 960px; } }
+@media (min-width: 1024px) { .page { padding: 24px; max-width: 1200px; } }
+
+/* ===== Hero ===== */
+.hero {
+  background: #283342;
+  border-radius: var(--radius); padding: 32px 24px; color: #fff;
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; right: -30px; top: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(64,158,255,0.12), rgba(102,177,255,0.06));
+}
+.hero h2 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+.hero p { font-size: 15px; opacity: 0.88; line-height: 1.7; margin-top: 8px; max-width: 480px; }
+.hero .tags { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.hero .tags span {
+  background: rgba(255,255,255,0.1); border-radius: 4px;
+  padding: 4px 14px; font-size: 12px; letter-spacing: 0.3px;
+}
+
+/* ===== Section Title ===== */
+.section-title {
+  font-size: 17px; font-weight: 600; margin: 18px 0 10px; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::before {
+  content: ''; width: 3px; height: 14px; background: var(--primary); border-radius: 2px;
+}
+
+/* ===== Module Grid ===== */
+.module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.module-card {
+  background: var(--bg-white); border-radius: var(--radius-sm); padding: 18px 12px;
+  cursor: pointer; transition: all 0.2s; border: 1px solid var(--border-xl);
+  text-align: center;
+}
+.module-card:active { transform: scale(0.97); }
+.module-card:hover { border-color: var(--primary-light); }
+.module-card .icon {
+  width: 40px; height: 40px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center; margin: 0 auto 8px;
+  font-size: 18px; color: #fff;
+}
+.module-card .name { font-weight: 600; font-size: 16px; }
+.module-card .desc { font-size: 13px; color: var(--text-3); margin-top: 4px; line-height: 1.4; }
+.module-card .count {
+  display: inline-block; font-size: 13px; background: var(--primary-bg);
+  color: var(--primary); padding: 2px 10px; border-radius: 4px; margin-top: 8px;
+  font-weight: 500;
+}
+
+/* ===== FAQ Accordion ===== */
+.faq-section { margin-top: 24px; }
+.faq-category { margin-bottom: 12px; }
+.faq-cat-title {
+  font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 6px;
+  padding-left: 2px; display: flex; align-items: center; gap: 6px;
+}
+.faq-cat-title::before { content: ''; width: 3px; height: 12px; background: var(--primary); border-radius: 2px; }
+.faq-item {
+  background: var(--bg-white); border-radius: var(--radius-sm);
+  border: 1px solid var(--border-xl); margin-bottom: 6px; overflow: hidden;
+}
+.faq-q {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px; cursor: pointer; transition: background 0.15s;
+  font-size: 14px; font-weight: 500; color: var(--text);
+  user-select: none;
+}
+.faq-q:hover { background: var(--primary-bg); }
+.faq-q i { color: var(--primary); font-size: 12px; transition: transform 0.2s; }
+.faq-q.open i { transform: rotate(90deg); }
+.faq-a {
+  display: none; padding: 0 14px 12px 34px;
+  font-size: 13px; color: var(--text-3); line-height: 1.7;
+}
+.faq-a.show { display: block; }
+.faq-link { color: var(--primary); cursor: pointer; border-bottom: 1px dashed var(--primary); }
+.faq-link:hover { background: var(--primary-bg); }
+
+/* ===== Feature List ===== */
+.feature-list { display: flex; flex-direction: column; gap: 10px; }
+
+.feature-card {
+  background: var(--bg-white); border-radius: var(--radius-sm); overflow: hidden;
+  border: 1px solid var(--border-xl);
+}
+.feature-card .card-header {
+  display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 12px;
+  cursor: pointer; transition: background 0.15s;
+}
+.feature-card .card-header:active { background: #FAFAFA; }
+.feature-card .fi {
+  width: 36px; height: 36px; border-radius: 8px; display: flex;
+  align-items: center; justify-content: center; font-size: 16px;
+  color: #fff; flex-shrink: 0;
+}
+.feature-card .info { flex: 1; min-width: 0; }
+.feature-card .info h3 { font-size: 16px; font-weight: 600; }
+.feature-card .info p { font-size: 14px; color: var(--text-3); margin-top: 3px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.feature-card .meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.feature-card .meta span {
+  font-size: 13px; background: var(--bg); color: var(--text-3);
+  padding: 2px 8px; border-radius: 4px;
+}
+
+/* ===== Sub Items ===== */
+.feature-card .sub-body { border-top: 1px solid var(--border-xl); }
+.feature-card .sub-body .sub-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px 10px 16px; font-size: 15px; color: var(--text-2);
+  cursor: pointer; transition: all 0.12s; border-bottom: 1px solid var(--border-xl);
+  margin-left: 14px; padding-right: 14px;
+}
+.feature-card .sub-body .sub-item:last-child { border-bottom: none; }
+.feature-card .sub-body .sub-item:hover { color: var(--primary); background: var(--primary-bg); }
+.feature-card .sub-body .sub-item .dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0;
+}
+.feature-card .sub-body .sub-item:hover .dot { background: var(--primary); }
+.feature-card .sub-body .sub-item .st { font-size: 13px; color: var(--text-4); margin-left: auto; flex-shrink: 0; }
+
+/* ===== About Card ===== */
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 100; display: none; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+.modal-overlay.show .modal { animation: slideUp 0.25s ease; }
+.modal {
+  background: var(--bg-white); border-radius: var(--radius) var(--radius) 0 0; width: 100%;
+  max-height: 85vh; overflow-y: auto; position: relative;
+}
+.modal::-webkit-scrollbar { width: 3px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.modal .modal-bd { padding: 20px 20px 24px; }
+.modal .handle {
+  width: 32px; height: 3px; background: var(--border); border-radius: 4px;
+  margin: 8px auto 0;
+}
+.modal .m-icon {
+  width: 40px; height: 40px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center; font-size: 18px; color: #fff; margin-bottom: 10px;
+}
+.modal h2 { font-size: 20px; font-weight: 600; }
+.modal .m-desc {
+  font-size: 15px; color: var(--text-2); margin-top: 6px; line-height: 1.7;
+  background: var(--primary-bg); padding: 10px 12px; border-radius: 6px;
+  border-left: 3px solid var(--primary);
+}
+.modal .m-section { margin-top: 14px; }
+.modal .m-section .m-row {
+  display: flex; padding: 6px 0; border-bottom: 1px solid var(--border-xl);
+  font-size: 15px; line-height: 1.6;
+}
+.modal .m-section .m-row:last-child { border-bottom: none; }
+.modal .m-section .m-row .label {
+  width: 90px; color: #2c3e7a; flex-shrink: 0; font-size: 14px; padding-top: 1px;
+}
+.modal .m-section .m-row .value { flex: 1; color: var(--text-2); }
+.modal .close-btn {
+  width: 100%; margin-top: 16px; padding: 10px;
+  border: 1px solid var(--border); background: var(--bg-white);
+  border-radius: 6px; font-size: 14px; color: var(--text-2);
+  cursor: pointer; transition: all 0.2s;
+}
+.modal .close-btn:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-bg); }
+
+/* ===== Confirm Dialog ===== */
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200;
+  display: none; align-items: center; justify-content: center;
+}
+.confirm-overlay.show { display: flex; animation: fadeIn 0.15s ease; }
+.confirm-box {
+  background: var(--bg-white); border-radius: var(--radius); width: 300px;
+  padding: 24px 20px 16px; text-align: center;
+  animation: slideUp 0.2s ease;
+}
+
+/* Header button confirm — positioned below the button on desktop */
+.confirm-overlay.from-header {
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 64px 16px 0 0;
+  background: rgba(0,0,0,0.12);
+}
+@media (min-width: 768px) {
+  .confirm-overlay.from-header .confirm-box {
+    border-radius: var(--radius-sm);
+    width: 260px; max-width: 260px;
+    padding: 20px 16px 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .confirm-overlay.from-header .confirm-box .msg { font-size: 14px; margin-bottom: 14px; }
+  .confirm-overlay.from-header .confirm-box .btns button { padding: 7px 0; font-size: 13px; }
+}
+.confirm-box .msg { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
+.confirm-box .btns { display: flex; gap: 10px; }
+.confirm-box .btns button {
+  flex: 1; padding: 9px 0; border-radius: 6px; font-size: 14px;
+  cursor: pointer; transition: all 0.15s; border: 1px solid var(--border);
+}
+.confirm-box .btn-confirm { background: var(--primary); color: #fff; border-color: var(--primary); }
+.confirm-box .btn-confirm:hover { background: var(--primary-dark); }
+.confirm-box .btn-cancel { background: var(--bg-white); color: var(--text-2); }
+.confirm-box .btn-cancel:hover { background: var(--bg); }
+
+/* ===== Search Result ===== */
+.search-result { padding: 8px 0; }
+.sr-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: 6px; cursor: pointer; transition: background 0.12s;
+}
+.sr-item:hover { background: var(--bg); }
+.sr-item .si {
+  width: 30px; height: 30px; border-radius: 6px; display: flex;
+  align-items: center; justify-content: center; color: #fff; font-size: 13px; flex-shrink: 0;
+}
+.sr-item .stxt { flex: 1; min-width: 0; }
+.sr-item .stxt .name { font-size: 16px; font-weight: 500; }
+.sr-item .stxt .from { font-size: 13px; color: var(--text-3); margin-top: 1px; }
+.sr-empty { text-align: center; color: var(--text-3); padding: 40px 0; font-size: 14px; }
+
+/* ===== Footer ===== */
+.footer { text-align: center; padding: 20px 0 10px; color: var(--text-4); font-size: 13px; }
+
+/* ===== Animation ===== */
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  50% { box-shadow: 0 2px 20px rgba(64,158,255,0.5); transform: scale(1.08); }
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.78); color: #fff; font-size: 14px;
+  padding: 10px 20px; border-radius: 8px; z-index: 300;
+  pointer-events: none; max-width: 90vw; text-align: center;
+  opacity: 0;
+}
+
+/* ===== Page ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ============================================================== */
+/*  RESPONSIVE — Desktop & Tablet                                 */
+/* ============================================================== */
+
+/* Tablet (640px+) */
+@media (min-width: 640px) {
+  .module-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .feature-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .feature-card .sub-body .sub-item { padding: 10px 16px 10px 16px; margin-left: 16px; padding-right: 16px; }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .hero { padding: 36px 32px; }
+  .hero h2 { font-size: 24px; }
+  .hero p { font-size: 16px; }
+
+  .module-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .module-card { padding: 24px 16px; }
+  .module-card .icon { width: 48px; height: 48px; font-size: 22px; }
+  .module-card .name { font-size: 15px; }
+
+  .feature-list { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .feature-card .card-header { padding: 16px 16px 12px; }
+
+  .section-title { font-size: 16px; margin: 24px 0 12px; }
+  .section-title::before { height: 16px; }
+}
+
+/* Short viewport (mobile foldable ~1:1) */
+@media (max-height: 700px) {
+  .hero { padding: 18px 16px !important; margin-bottom: 12px !important; }
+  .hero h2 { font-size: 17px !important; }
+  .hero p { font-size: 13px !important; margin-top: 4px !important; }
+  .hero .tags { margin-top: 8px !important; }
+  .hero .tags span { font-size: 11px; padding: 2px 10px; }
+  .section-title { margin: 12px 0 6px !important; font-size: 15px !important; }
+  .faq-section { margin-top: 12px !important; }
+  .faq-q { padding: 8px 12px !important; font-size: 13px !important; }
+  .faq-a { font-size: 13px !important; padding: 0 12px 8px 30px !important; }
+  .module-card { padding: 12px 8px !important; }
+  .module-card .icon { width: 32px; height: 32px; font-size: 15px; margin-bottom: 4px; }
+  .module-card .name { font-size: 14px; }
+  .module-card .desc { font-size: 12px; }
+  .module-grid { gap: 6px; }
+  .page { padding: 10px !important; }
+}
+
+/* ===== Back to Top ===== */
+.back-to-top {
+  position: fixed; bottom: 24px; right: 20px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--primary); color: #fff; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  opacity: 0; visibility: hidden; transition: all 0.25s; font-size: 16px;
+}
+.back-to-top.show { opacity: 1; visibility: visible; }
+.back-to-top:hover { background: var(--primary-dark); }
+
+/* ===== QR Code Button ===== */
+.qr-btn {
+  position: fixed; bottom: 72px; right: 20px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--primary); color: #fff; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 50; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  font-size: 16px; transition: all 0.25s;
+}
+.qr-btn { animation: pulse 2.5s ease-in-out infinite; }
+.qr-btn:hover { background: var(--primary-dark); transform: scale(1.05); animation: none; }
+.qr-btn::after {
+  content: '扫码咨询'; position: absolute; right: 48px; top: 50%;
+  transform: translateY(-50%); background: var(--primary); color: #fff;
+  font-size: 12px; padding: 4px 10px; border-radius: 4px; white-space: nowrap;
+  pointer-events: none; animation: fadeIn 0.5s ease 4s both;
+}
+
+/* ===== Modal Close X ===== */
+.modal-close-x {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 6px;
+  background: none; border: none; font-size: 18px;
+  color: var(--text-4); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; z-index: 10;
+}
+
+/* ===== Breadcrumb ===== */
+.breadcrumb {
+  font-size: 13px; color: var(--text-3); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.breadcrumb .bc-link { color: var(--primary); cursor: pointer; }
+.breadcrumb .bc-link:hover { text-decoration: underline; }
+.m-breadcrumb {
+  font-size: 12px; color: var(--text-4); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+}
+
+/* Modal responsive: centered on desktop */
+@media (min-width: 768px) {
+  .modal-overlay { align-items: center; }
+  .modal { max-width: 600px; border-radius: var(--radius); max-height: 80vh; }
+  .modal .handle { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="header">
+    <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+    <div class="title-area">
+      <div class="main-title" id="headerTitle"><img src="https://www.meiyangxuexili.com/agent/img/jst_logo.Bs_ur0mu.png" style="height:32px;vertical-align:middle" alt="美羊AI学习力系统"></div>
+      <div class="sub-title" id="headerSub">北师大杨娟教授团队研发</div>
+    </div>
+    <span class="header-link-btn" data-click="extLink" data-args="https://www.meiyangxuexili.com/agent/#/index" title="前往后台管理系统"><i class="fas fa-external-link-alt"></i><span class="link-text">前往后台</span></span>
+    <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i></button>
+  </div>
+
+  <div class="search-bar" id="searchBar">
+    <input type="text" id="searchInput" placeholder="搜索功能名称...">
+  </div>
+
+  <div class="main" id="mainContent">
+    <div id="pageHome" class="page active"></div>
+    <div id="pageDetail" class="page"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalContent">
+      <button class="modal-close-x" data-click="closeModalForce"><i class="fas fa-times"></i></button>
+      <div class="modal-bd"></div>
+    </div>
+  </div>
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="msg" id="confirmMsg"></div>
+      <div class="btns">
+        <button class="btn-cancel" id="confirmCancel">取 消</button>
+        <button class="btn-confirm" id="confirmOk">跳 转</button>
+      </div>
+    </div>
+  </div>
+  <div class="back-to-top" id="backToTop" data-click="scrollToTop"><i class="fas fa-arrow-up"></i></div>
+  <div class="qr-btn" id="qrBtn"><i class="fas fa-qrcode"></i></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const COLORS = [
+  'linear-gradient(135deg,#409EFF,#66B1FF)',
+  'linear-gradient(135deg,#67C23A,#85CE61)',
+  'linear-gradient(135deg,#E6A23C,#EBC475)',
+  'linear-gradient(135deg,#F56C6C,#F89898)',
+  'linear-gradient(135deg,#909399,#B1B3B8)',
+  'linear-gradient(135deg,#409EFF,#66B1FF)',
+  'linear-gradient(135deg,#9B59B6,#C78BDF)',
+  'linear-gradient(135deg,#1ABC9C,#5FE0C4)',
+];
+const QR_DATA = 'data:image/png;base64,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';
+
+const MODULES = [
+  {
+    id:'ceping', name:'测评功能', desc:'14项测评工具，全面诊断学习力', count:'14项',
+    color:'linear-gradient(135deg,#409EFF,#66B1FF)',
+    children:[{
+      id:'zonghe', name:'学习力综合测评', icon:'fas fa-brain',
+      desc:'基于BMA学习力模型(Brain学习策略-Motivation学习动力-Action学习习惯)，从3大模块、10个项目、28个维度全面诊断',
+      items:[{
+        id:'qiance', name:'学习力综合测评（前测）', icon:'fas fa-play', sub:'约25-35分钟',
+        detail:{
+          desc:'初次全面诊断学生学习力水平，精准识别优势项和待提升项，为智能推送个性化学习方案提供依据',
+          rows:[
+            {label:'测评维度', value:'BMA三大模块(学习策略/学习动力/学习习惯)、10个项目、28个维度'},
+            {label:'测评时长', value:'约25-35分钟'},
+            {label:'适用对象', value:'小学4~6年级、初中、高中学生'},
+            {label:'应用场景', value:'首次接入学生的学习力诊断，对学生的综合学习力进行评估，生成基线数据'},
+            {label:'指导语', value:'参考学习力综合测评（前测）指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师分享测评链接/二维码邀请学生注册并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告和解读指南 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'通过教师分享的链接/二维码进入测评系统并完成的作答免费；<br>完整测评报告需用下载授权码兑换（下载授权码为付费资源，购买账号时会附赠一定份额，用完后需另行购买）'},
+            {label:'报告内容', value:'在线简版报告(学生端即时免费查看)；<br>测评报告及解读指南(需下载授权码兑换)'},
+          ]
+        }
+      },{
+        id:'houce', name:'学习力综合测评（后测）', icon:'fas fa-flag-checkered', sub:'约25-35分钟',
+        detail:{
+          desc:'阶段性学习后验证提升效果，与前测数据对比量化提升幅度，为后续课程调整提供数据支撑',
+          rows:[
+            {label:'测评维度', value:'BMA三大模块、10个项目、28个维度（与前测一致，便于对比分析）'},
+            {label:'测评时长', value:'约25-35分钟'},
+            {label:'适用对象', value:'已完成对应阶段学习任务的学生'},
+            {label:'应用场景', value:'阶段性学习后验证提升效果，用于课程效果展示、续费转化、学习方案调整'},
+            {label:'指导语', value:'参考学习力综合测评（后测）指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师分享测评链接/二维码邀请学生注册并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告和解读指南 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'通过教师分享的链接/二维码进入测评系统并完成的作答免费；<br>完整测评报告需用下载授权码兑换'},
+            {label:'报告内容', value:'在线简版报告(学生端即时免费查看)；<br>测评报告及解读指南(需下载授权码兑换)'},
+            {label:'重要提醒', value:'后测必须在学生完成至少一阶段(一阶/二阶/三阶)学习计划后再进行，否则数据将失去对比意义'},
+          ]
+        }
+      },{
+        id:'xuexijihua', name:'学习计划', icon:'fas fa-calendar-alt', sub:'三阶共36节',
+        detail:{
+          desc:'根据学生学习力综合测评生成的个性化学习力提升方案',
+          inviteLink:'https://www.meiyangxuexili.com/agent/#/student/studyplanlist',
+          inviteText:'前往学习计划管理',
+          rows:[
+            {label:'前测学习计划', value:'系统根据测评结果从前测学习力在线视频课中进行个性化匹配，提供三阶各12节，总计36节个性化学习力在线视频课，每阶段消耗1个听课授权码，可单独兑换'},
+            {label:'后测学习计划', value:'系统根据前后测数据变化，从后测学习力在线视频课个性化匹配与前测不同的三阶、共计36节个性化课程的进阶方案，每阶段消耗1个听课授权码，可单独兑换'},
+            {label:'有效期', value:'学习计划自兑换之日起1年内有效，逾期无法继续学习'},
+            {label:'重要提醒', value:'后测必须在学生完成至少一阶段学习计划后再进行，否则数据将失去对比意义'},
+          ]
+        }
+      }]
+    },{
+      id:'xueke', name:'学科学习力测评', icon:'fas fa-book',
+      desc:'从学科角度诊断影响学生学习力的底层原因，不考查知识点掌握程度，属于学习力诊断范畴',
+      items:[{
+        id:'yuwen', name:'语文学科学习力测评', icon:'fas fa-language', sub:'15-20分钟',
+        detail:{
+          desc:'从学科学习动力、学科学习能力和学科学习习惯三个维度，评估学生在语文学科中的真实状态，找到影响语文学科学习力的根源',
+          rows:[
+            {label:'测评维度', value:'学科学习动力、学科学习能力、学科学习习惯'},
+            {label:'细分维度', value:'学科兴趣、学科情绪、价值意义、理解能力、分析综合能力、表达应用能力、识记能力、赏析评价能力、探究能力、预习习惯、听课习惯、复习习惯、练习习惯、考试习惯、学习计划习惯、时间管理习惯（共16个细分维度）'},
+            {label:'测评时长', value:'约15-20分钟'},
+            {label:'适用对象', value:'初一至初三学生（部分六年级学生也可参与）'},
+            {label:'应用场景', value:'学科偏科诊断、补课引流、针对性辅导方案制定、家长沟通'},
+            {label:'指导语', value:'参考语文学科学习力测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师分享测评链接/二维码邀请学生注册并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'通过教师分享的链接/二维码进入测评系统并完成的作答免费；<br>完整测评报告需用下载授权码兑换'},
+            {label:'报告内容', value:'在线简版报告(学生端即时免费查看)；<br>测评报告(需下载授权码兑换)'},
+          ]
+        }
+      },{
+        id:'shuxue', name:'数学学科学习力测评', icon:'fas fa-calculator', sub:'15-20分钟',
+        detail:{
+          desc:'从学科学习动力、学科学习能力和学科学习习惯三个维度，评估学生在数学学科中的真实状态，找到影响数学学科学习力的根源',
+          rows:[
+            {label:'测评维度', value:'学科学习动力、学科学习能力、学科学习习惯'},
+            {label:'细分维度', value:'学科兴趣、学科情绪、价值意义、创新意识、应用意识、抽象概括能力、推理论证能力、运算求解能力、数据处理能力、空间想象能力、预习习惯、听课习惯、复习习惯、练习习惯、考试习惯、学习计划习惯、时间管理习惯（共17个细分维度）'},
+            {label:'测评时长', value:'约15-20分钟'},
+            {label:'适用对象', value:'初一至初三学生（部分六年级学生也可参与）'},
+            {label:'应用场景', value:'学科偏科诊断、补课引流、针对性辅导方案制定、家长沟通'},
+            {label:'指导语', value:'参考数学学科学习力测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师分享测评链接/二维码邀请学生注册并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'通过教师分享的链接/二维码进入测评系统并完成的作答免费；<br>完整测评报告需用下载授权码兑换'},
+            {label:'报告内容', value:'在线简版报告(学生端即时免费查看)；<br>测评报告(需下载授权码兑换)'},
+          ]
+        }
+      },{
+        id:'yingyu', name:'英语学科学习力测评', icon:'fas fa-language', sub:'20-30分钟',
+        detail:{
+          desc:'从学科学习动力、学科学习能力和学科学习习惯三个维度，评估学生在英语学科中的真实状态，找到影响英语学科学习力的根源',
+          rows:[
+            {label:'测评维度', value:'学科学习动力、学科学习能力、学科学习习惯'},
+            {label:'细分维度', value:'学科兴趣、学科情绪、学科意义、分析综合能力、表达能力、识记能力、预习习惯、听课习惯、复习习惯、考试习惯、作业习惯、学习计划习惯、时间管理习惯（共13个细分维度）'},
+            {label:'测评时长', value:'约20-30分钟'},
+            {label:'适用对象', value:'初一至初三学生（部分六年级学生也可参与）'},
+            {label:'应用场景', value:'学科偏科诊断、补课引流、针对性辅导方案制定、家长沟通'},
+            {label:'指导语', value:'参考英语学科学习力测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师分享测评链接/二维码邀请学生注册并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'通过教师分享的链接/二维码进入测评系统并完成的作答免费；<br>完整测评报告需用下载授权码兑换'},
+            {label:'报告内容', value:'在线简版报告(学生端即时免费查看)；<br>测评报告(需下载授权码兑换)'},
+          ]
+        }
+      }]
+    },{
+      id:'guihua', name:'规划测评', icon:'fas fa-compass',
+      desc:'专为高中生设计，聚焦新高考选科和高考志愿填报两大决策场景',
+      items:[{
+        id:'xuanke', name:'高中选科测评', icon:'fas fa-list-check', sub:'20-30分钟 · 高一',
+        detail:{
+          desc:'从学科兴趣、认知潜能和职业倾向三个维度，帮助学生科学评估与各选科组合的匹配度，避免凭感觉或跟风选科',
+          rows:[
+            {label:'测评维度', value:'学科兴趣、认知潜能、职业倾向'},
+            {label:'测评时长', value:'约20-30分钟'},
+            {label:'适用对象', value:'高一学生'},
+            {label:'应用场景', value:'高一学生选科决策期间，帮助评估适合的选科方向'},
+            {label:'指导语', value:'参考高中选科测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师发送测评邀请链接给学生的同时发放测评授权码，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步下载查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'初始包含50份免费额度，用完联系总部充值（当前免费充值，后续政策如有调整以总部通知为准）'},
+          ]
+        }
+      },{
+        id:'zhiyuan', name:'高考志愿专业定位测评', icon:'fas fa-map-location-dot', sub:'20-30分钟 · 高三',
+        detail:{
+          desc:'从职业性格、能力倾向和未来职业倾向三个维度，帮助学生找到与自身特质最匹配的专业方向，让志愿填报从"凭感觉"变为"靠数据"',
+          rows:[
+            {label:'测评维度', value:'职业性格、能力倾向、未来职业倾向'},
+            {label:'测评时长', value:'约20-30分钟'},
+            {label:'适用对象', value:'高三学生'},
+            {label:'应用场景', value:'高三学生志愿填报期，帮助在分数范围内找到最适合的专业方向；<br>建议与高招信息模块联动使用'},
+            {label:'指导语', value:'参考高考志愿专业定位测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},
+            {label:'测评步骤', value:'1.教师发送测评邀请链接给学生的同时发放测评授权码，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步下载查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},
+            {label:'费用说明', value:'初始包含50份免费额度，用完联系总部充值（当前免费充值，后续政策如有调整以总部通知为准）'},
+          ]
+        }
+      }]
+    },{
+      id:'zhuanxiang', name:'专项测评', icon:'fas fa-puzzle-piece',
+      desc:'7项免费工具，涵盖个性特质、职业兴趣、智能优势、家庭教养、校园环境、心理健康等领域',
+      items:[{
+        id:'mbti', name:'MBTI测评', icon:'fas fa-user', sub:'约10分钟',
+        detail:{desc:'通过4个维度、16种性格类型，帮助学生了解自己的个性类型和行为偏好，认识自己的优势和不足',rows:[{label:'测评维度',value:'精力来源(外向/内向)、信息搜集(感觉/直觉)、决策方式(思考/情感)、生活方式(判断/知觉)'},{label:'测评时长',value:'约10分钟'},{label:'适用对象',value:'初高中及以上学生'},{label:'应用场景',value:'帮助学生了解自身学习风格偏好；<br>升学规划辅导、选科参考'},{label:'指导语',value:'参考MBTI测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给学生，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'收到邀请链接的学生可免费进行测评，完整版报告免费下载'}]}},
+        {id:'holland', name:'霍兰德职业兴趣测评', icon:'fas fa-briefcase', sub:'15-25分钟',
+          detail:{desc:'将人的职业兴趣分为6种类型(RIASEC)，通过评估学生在各类型上的倾向强度，找到与学生最匹配的专业和职业方向',rows:[{label:'测评维度',value:'现实型(R)、研究型(I)、艺术型(A)、社会型(S)、企业型(E)、传统型(C)'},{label:'测评时长',value:'约15-25分钟'},{label:'适用对象',value:'初高中学生'},{label:'应用场景',value:'高中选科参考、升学规划辅导、激发学习目标感'},{label:'指导语',value:'参考霍兰德职业兴趣测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给学生，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'免费'}]}},
+        {id:'duoyuan', name:'多元智能测评', icon:'fas fa-cubes', sub:'15-20分钟',
+          detail:{desc:'基于加德纳多元智能理论，评估学生在8个维度的优势分布，发现真正擅长的领域',rows:[{label:'测评维度',value:'语言智能、数理智能、空间智能、运动智能、音乐智能、人际交往智能、内省智能、自然观察智能'},{label:'测评时长',value:'约15-20分钟'},{label:'适用对象',value:'四年级及以上学生'},{label:'应用场景',value:'小学/初中阶段兴趣引导，帮助家长发现学生天赋；<br>与教养风格测评组合用于家长沙龙引流'},{label:'指导语',value:'参考多元智能测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给学生，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'免费'}]}},
+        {id:'jiaoyang', name:'教养风格测评', icon:'fas fa-hand-holding-heart', sub:'8-12分钟',
+          detail:{desc:'从接纳—拒绝、温情—粗暴、激励—惩罚、理解—责备四个维度评估教养模式，帮助家长了解自己的教养特点',rows:[{label:'测评维度',value:'接纳-拒绝、温情-粗暴、激励-惩罚、理解-责备（四组连续维度）'},{label:'测评时长',value:'约8-12分钟'},{label:'适用对象',value:'有学生的家长，尤其学生处于中小学阶段的家庭'},{label:'应用场景',value:'家长沙龙、家庭教育讲座等引流场景'},{label:'指导语',value:'参考教养风格测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给学生，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'免费'}]}},
+        {id:'xiaoyuan', name:'校园氛围测评', icon:'fas fa-school', sub:'15-20分钟',
+          detail:{desc:'从五个维度全面了解学校的整体氛围状况，为学校优化环境提供参考',rows:[{label:'测评维度',value:'同学关系、师生关系、对多样性的尊重、期望的清晰度、规则的公平度'},{label:'测评时长',value:'约15-20分钟'},{label:'适用对象',value:'学校管理者、教育机构、教师'},{label:'应用场景',value:'进校服务项目，帮助学校了解校园环境状况；<br>班级建设评估、学校管理改善参考'},{label:'指导语',value:'参考校园氛围测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给测评对象，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'免费'}]}},
+        {id:'zhiyejiazhi', name:'职业价值观测评', icon:'fas fa-scale-balanced', sub:'15-20分钟',
+          detail:{desc:'评估学生在选择未来职业时最看重的因素，帮助学生明确自己的职业追求',rows:[{label:'测评维度',value:'工作稳定性、创新性、社会价值、经济回报等职业偏好'},{label:'测评时长',value:'约15-20分钟'},{label:'适用对象',value:'高中阶段学生'},{label:'应用场景',value:'高中升学规划辅导，与选科/志愿测评配合使用；<br>帮助学生明确职业追求，激发学习目标感'},{label:'指导语',value:'参考职业价值观测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给学生，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'免费'}]}},
+        {id:'xinli', name:'心理健康评估测评', icon:'fas fa-heart-pulse', sub:'10-15分钟',
+          detail:{desc:'从人际关系、学业发展、生活状态三个维度评估学生心理健康状况的自评工具（不是诊断工具）',rows:[{label:'测评维度',value:'人际关系、学业发展、生活状态'},{label:'测评时长',value:'约10-15分钟'},{label:'适用对象',value:'全体学生'},{label:'应用场景',value:'学生心理健康常规筛查；<br>考试前后情绪评估'},{label:'指导语',value:'参考心理健康评估测评指导语，也可在系统【汇享资源】→【新手指南】中查看'},{label:'测评步骤',value:'1.教师发送测评邀请链接给学生，并分享测评指导语 <br>2.学生注册后进行在线作答 <br>3.学生作答结束后在线预览在线简版报告，教师同步从【学生记录管理】-【测评记录管理】中下载并查看测评报告 <a href="https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:underline"><i class="fas fa-external-link-alt" style="font-size:11px"></i></a>'},{label:'费用说明',value:'免费'}]}}]
+    }]
+  },
+  {
+    id:'kecheng', name:'课程功能', desc:'3大课程体系，覆盖视频课、团辅、素养课', count:'3大体系',
+    color:'linear-gradient(135deg,#67C23A,#85CE61)',
+    children:[{
+      id:'shipin', name:'学习力在线视频课', icon:'fas fa-video',
+      desc:'核心课程产品，基于测评结果智能匹配个性化方案',
+      items:[{
+        id:'shipin-detail', name:'学习力在线视频课', icon:'fas fa-video', sub:'15~20分钟/节',
+        detail:{
+          desc:'学生完成学习力综合测评（前测、后测）后，系统自动匹配学习力在线视频课形成专属学习计划',
+          link:'https://www.meiyangxuexili.com/agent/#/student/studyplanlist',
+          rows:[
+            {label:'课程体系', value:'前测/后测各三阶共36节，每阶12节，每阶消耗1个听课授权码'},
+            {label:'课程时长', value:'15~20分钟/节'},
+            {label:'提升维度', value:'根据测评结果，个性化多维度提升学生学习力'},
+            {label:'适用对象', value:'完成学习力综合测评后，有意向提升学习力的学生'},
+            {label:'应用场景', value:'线下一对一双师课，一对一在线视频课，一对一学习力提升课备课等'},
+            {label:'兑换步骤', value:'方式1：教师【授权码管理】→【听课授权码管理】获取听课码→点击售出→发放给学生→学生在【学习计划管理】输入听课码兑换→解锁对应阶段课程。<br>方式2：教师在【学生记录管理】→【学习计划管理】中点击兑换课程，解锁对应阶段课程'},
+            {label:'费用说明', value:'1个听课码解锁一阶课程(12节)，需先标记为"售出"状态才可兑换'},
+            {label:'有效期', value:'学习计划自兑换之日起1年内有效，逾期无法继续学习'},
+          ]
+        }
+      }]
+    },{
+      id:'tuanfu', name:'学习力团辅在线课件', icon:'fas fa-users',
+      desc:'三阶段递进式团体辅导课程解决方案',
+      items:[{
+        id:'tuanfu-detail', name:'学习力团辅在线课件', icon:'fas fa-users', sub:'40~60分钟/节',
+        detail:{
+          desc:'学习力团辅在线课件按一阶→二阶→三阶递进编排，每阶段12门课程，可根据学生学段灵活组合排课',
+          link:'https://www.meiyangxuexili.com/agent/#/course/teamcourse?id=403',
+          rows:[
+            {label:'提升维度', value:'一阶：动力激活与基础习惯建立；<br>二阶：自我探索与学习能力深化；<br>三阶：生涯规划与高阶策略'},
+            {label:'课程时长', value:'40~60分钟/节'},
+            {label:'适用对象', value:'小学4~6年级、初中、高中各学段'},
+            {label:'应用场景', value:'线下团辅课，寒暑假营等'},
+            {label:'费用说明', value:'标准化课件部分合作套餐中赠送；<br>教师手册、学生手册合作初始阶段各赠送一本，加购请联系对应销售老师'},
+            {label:'有效期', value:'同账号有效期'},
+          ]
+        }
+      }]
+    },{
+      id:'suyang', name:'小学学科在线素养课', icon:'fas fa-pen-fancy',
+      desc:'专为小学4~6年级设计，培养学习方法与思维能力',
+      items:[{
+        id:'suyang-detail', name:'小学学科在线素养课', icon:'fas fa-pen-fancy', sub:'45+45分钟',
+        detail:{
+          desc:'以语文、数学为载体培养学习方法与思维能力，不追求知识点的重复覆盖与刷题训练，属于学习力培养范畴，非学科类培训',
+          link:'https://www.meiyangxuexili.com/agent/#/course/teamCourselist?is_free=3',
+          rows:[
+            {label:'提升维度', value:'逻辑推理、信息整合、模型建构、元认知、自主学习等学科素养'},
+            {label:'课程时长', value:'45分钟+45分钟'},
+            {label:'适用对象', value:'小学4~6年级'},
+            {label:'应用场景', value:'团体课、课后托管、进校服务等'},
+            {label:'费用说明', value:'标准化课件请联系对应销售老师开通；<br>教师手册、学生手册因印刷价格波动，加购请联系销售老师'},
+            {label:'有效期', value:'同账号有效期'},
+          ]
+        }
+      }]
+    }]
+  },
+  {
+    id:'guanli', name:'管理功能', desc:'信息管理·授权码·学生记录·精品课程', count:'6大模块',
+    color:'linear-gradient(135deg,#E6A23C,#EBC475)',
+    children:[{
+      id:'zhuye', name:'主页 · 数据看板', icon:'fas fa-home', sub:'运营数据总览',
+      desc:'教师登录后的首页，集中展示关键运营数据',
+      items:[{
+        id:'zhuye-detail', name:'数据看板', icon:'fas fa-chart-pie', sub:'关键指标',
+        detail:{
+          desc:'教师登录后的首页，集中展示关键运营数据',
+          link:'https://www.meiyangxuexili.com/agent/#/index',
+          linkText:'前往数据看板',
+          rows:[
+            {label:'今日待办事项', value:'待处理的运营/管理任务提醒'},
+            {label:'注册学生数量', value:'当前共有学员数，含昨日环比变化'},
+            {label:'本月新增学生', value:'本月新增注册学生人数'},
+            {label:'下载授权码总数', value:'目前已获得的下载授权码总数及剩余未使用数量'},
+            {label:'阶段码统计', value:'听课授权码(阶段码)总数及剩余可用数量'},
+            {label:'测评统计', value:'学生完成的测评总量及本月新增量'},
+            {label:'已生成学习计划数', value:'已生成的个性化学习计划数量'},
+            {label:'用户反馈数', value:'学生/家长提交的反馈意见数量'},
+            {label:'销售统计', value:'各类测评及课程的销售数据'},
+          ]
+        }
+      }]
+    },{
+      id:'xinxi', name:'信息管理', icon:'fas fa-address-card', sub:'基本信息/学生信息/邀请链接/登录日志',
+      desc:'管理账号信息、学生信息、测评邀请方式及登录安全',
+      items:[{
+        id:'jiben', name:'基本信息管理', icon:'fas fa-id-card', sub:'9项设置',
+        detail:{
+          desc:'管理教师账号的基本信息，包括头像、姓名、密码、联系方式、注册邀请码等',
+          link:'https://www.meiyangxuexili.com/agent/#/baseinfo/agentinfo',
+          linkText:'前往基本信息管理',
+          rows:[
+            {label:'头像上传', value:'教师信息页面显示的账号头像，可修改'},
+            {label:'账号类型', value:'当前账号的账号类型，如需修改请联系您对应的销售老师'},
+            {label:'姓名', value:'教师信息页面显示的教师姓名，可修改'},
+            {label:'密码', value:'登录账号使用的密码，可修改'},
+            {label:'地址', value:'教师账号信息页面显示的教师所在区域，校长账号显示机构所在地址，可修改'},
+            {label:'电话', value:'教师账号信息页面显示的教师联系方式，可修改'},
+            {label:'注册邀请码', value:'注册邀请码为账号固定标识(如：Z*****)，可用于邀请学生评测时填写'},
+            {label:'到期时间', value:'当前账号的使用有效期'},
+            {label:'微信号二维码', value:'可添加微信或企业微信二维码，测评结束后家长展示联系方式，实现转化与获客'},
+          ]
+        }
+      },{
+        id:'xsguanli', name:'学生信息管理', icon:'fas fa-user-graduate', sub:'查看/导出',
+        detail:{
+          desc:'查看通过专属链接注册的学生基础资料，支持多条件筛选查询和导出Excel，便于线下跟进转化',
+          link:'https://www.meiyangxuexili.com/agent/#/baseinfo/studentlist',
+          linkText:'前往学生信息管理',
+          rows:[
+            {label:'查看', value:'点击可查看该学生的完整资料详情'},
+            {label:'导出', value:'将当前筛选条件下的学生数据导出为Excel文件，便于线下跟进转化'},
+            {label:'校长', value:'学生所属校长账号(个人教师购买时显示"美羊校长"，学生数据归教师账号所有)'},
+            {label:'教师', value:'负责该学生的教师姓名'},
+            {label:'姓名', value:'学生进行测评时填写的姓名'},
+            {label:'所在地', value:'学生填写省市/城区信息'},
+            {label:'学校名称', value:'学生填写的所在学校'},
+            {label:'年级', value:'学生填写的当前年级'},
+            {label:'班级', value:'学生填写的所在班级'},
+            {label:'电话号码', value:'学生注册手机号，如使用免手机号注册可能为空'},
+            {label:'测评名称', value:'学生已参与的测评名称，点击后可查看详情'},
+            {label:'计划数量', value:'已生成的学习计划数量'},
+            {label:'注册时间', value:'学生注册账号的时间'},
+          ]
+        }
+      },{
+        id:'yaoqing', name:'测评邀请链接', icon:'fas fa-link', sub:'两种模式',
+        detail:{
+          desc:'通过分享测评链接邀请学生注册，支持两种邀请模式，可在【信息管理】→【测评邀请链接】中查看和复制链接',
+          link:'https://www.meiyangxuexili.com/agent/#/baseinfo/Assinvite',
+          linkText:'前往测评邀请链接',
+          rows:[
+            {label:'模式一(无需手机号)', value:'学生无需手机号，注册后自动登录，学生自行选择测评'},
+            {label:'模式二(手机号必填)', value:'学生必须填写手机号，注册后自动登录跳转对应测评页面'},
+            {label:'转化设置', value:'两种模式均在测评报告尾部显示教师设置的微信二维码和电话，引导意向家长主动咨询'},
+          ]
+        }
+      },{
+        id:'dengrulog', name:'登录日志', icon:'fas fa-shield-alt', sub:'安全监控',
+        detail:{
+          desc:'实时查看登录状态、时间及地点，全方位守护账号信息安全',
+          link:'https://www.meiyangxuexili.com/agent/#/user/loginLog',
+          linkText:'前往登录日志',
+          rows:[
+            {label:'安全机制', value:'系统采用单点登录机制，避免多端登录导致账号泄露'},
+          ]
+        }
+      }]
+    },{
+      id:'shouquan', name:'授权码管理', icon:'fas fa-key', sub:'下载/听课/测评授权码',
+      desc:'管理三种授权码的分配、售出和使用记录',
+      items:[{
+        id:'xzsq', name:'下载授权码管理', icon:'fas fa-download', sub:'兑换测评报告',
+        detail:{
+          desc:'用于下载学习力综合测评(前测/后测)、学科学习力测评(语/数/英)的完整报告',
+          link:'https://www.meiyangxuexili.com/agent/#/authcode/assInvitationcode?type=download',
+          linkText:'前往下载授权码管理',
+          rows:[
+            {label:'用途', value:'用于下载学习力综合测评(前测/后测)、学科学习力测评(语/数/英)的报告'},
+            {label:'兑换规则', value:'1个下载授权码兑换1份测评报告，学习力综合测评额外附赠解读指南'},
+            {label:'兑换流程', value:'学生完成测评 → 教师登录后台【学生记录管理】→【测评记录管理】→ 使用下载授权码兑换测评报告 → 测评报告+解读指南同步生成 → 下载查看'},
+            {label:'费用说明', value:'购买账号时会附赠一定份额的下载授权码，用完后请联系销售老师另行购买'},
+          ]
+        }
+      },{
+        id:'tksq', name:'听课授权码管理', icon:'fas fa-headset', sub:'解锁视频课',
+        detail:{
+          desc:'用于解锁学习力在线视频课，1个码解锁一阶课程(12节)',
+          link:'https://www.meiyangxuexili.com/agent/#/authcode/courseInvitationcode?type=stage',
+          linkText:'前往听课授权码管理',
+          rows:[
+            {label:'用途', value:'用于解锁学习力在线视频课'},
+            {label:'兑换规则', value:'需先标记为"售出"状态后才可兑换，1个码解锁一阶课程(12节)'},
+            {label:'使用方法', value:'教师后台获取听课码 → 标记售出 → 发放给学生 → 学生在【学习计划管理】输入听课码兑换 → 解锁对应阶段课程'},
+            {label:'费用说明', value:'购买账号时会附赠一定份额的听课授权码，用完后请联系销售老师另行购买'},
+          ]
+        }
+      },{
+        id:'cpsq', name:'测评授权码管理', icon:'fas fa-ticket', sub:'规划测评专用',
+        detail:{
+          desc:'用于高中选科测评、高考志愿专业定位测评',
+          link:'https://www.meiyangxuexili.com/agent/#/authcode/assInvitationcode?type=assessment',
+          linkText:'前往测评授权码管理',
+          rows:[
+            {label:'用途', value:'用于高中选科测评、高考志愿专业定位测评'},
+            {label:'兑换规则', value:'需先标记为"售出"状态后才可用于测评，1个码对应一次测试'},
+            {label:'使用方法', value:'教师登录后台 → 售出后复制测评授权码 → 连同测评邀请链接一起发放给学生 → 学生打开链接并输入码参与测评 → 查看并下载报告'},
+            {label:'费用说明', value:'购买账号时会附赠一定份额的测评授权码，用完后请联系销售老师另行购买'},
+          ]
+        }
+      }]
+    },{
+      id:'xuesheng', name:'学生记录管理', icon:'fas fa-users-gear', sub:'测评/计划/反馈管理',
+      desc:'集中管理所有学生的测评数据、学习计划和反馈意见',
+      items:[{
+        id:'cpjl', name:'测评记录管理', icon:'fas fa-clipboard-list', sub:'查看/下载报告',
+        detail:{
+          desc:'集中管理所有学生的测评数据，支持查看、筛选、报告下载、解读指南下载等操作',
+          link:'https://www.meiyangxuexili.com/agent/#/student/assessmentrecordlist',
+          linkText:'前往测评记录管理',
+          rows:[
+            {label:'测评人', value:'学生进行测评时填写的姓名'},
+            {label:'手机号', value:'学生注册手机号，免手机号注册可能为空'},
+            {label:'年级/班级', value:'学生填写的当前年级和班级'},
+            {label:'学校名称', value:'学生填写的所在学校'},
+            {label:'测评名', value:'学生参与的测评名称'},
+            {label:'测评时间', value:'学生进行该测评的时间'},
+            {label:'是否查看', value:'显示当前的报告是否已被教师查看'},
+            {label:'设为已读', value:'将测评记录标记为已读'},
+            {label:'报告', value:'下载学生测评报告，部分测评需消耗下载码'},
+            {label:'解读', value:'下载学习力综合测评对应的解读指南'},
+            {label:'学习计划', value:'前测完成后查看或跳转到学生个性化学习计划'},
+            {label:'本页报告下载', value:'一键下载当前页面所有已完成测评学生的报告(批量操作)'},
+            {label:'重新生成报告', value:'对已完成但报告异常的学生重新生成报告'},
+          ]
+        }
+      },{
+        id:'xxjh', name:'学习计划管理', icon:'fas fa-calendar-check', sub:'跟踪进度',
+        detail:{
+          desc:'查看并跟踪学生学习计划进度，对应学生的三阶段个性化学习力提升课程',
+          link:'https://www.meiyangxuexili.com/agent/#/student/studyplanlist',
+          linkText:'前往学习计划管理',
+          rows:[
+            {label:'姓名/年级/班级', value:'学生信息'},
+            {label:'测评名', value:'该学习计划对应的测评名称'},
+            {label:'计划名称', value:'该学习计划的名称'},
+            {label:'计划生成时间', value:'该学习计划生成的时间'},
+            {label:'总课程数', value:'该学习计划包含的总课程数'},
+            {label:'已完成课程', value:'学生在教师陪伴下已完成的课程数'},
+            {label:'是否兑换', value:'查看是否已从后台兑换此学习计划'},
+            {label:'查看', value:'查看学习计划详情，包括课程列表、完成进度，可直接查看课程视频完成上课'},
+          ]
+        }
+      },{
+        id:'fkgl', name:'用户反馈管理', icon:'fas fa-comment-dots', sub:'收集意见',
+        detail:{
+          desc:'收集学生/家长对测评、课程、服务的反馈意见，用于优化运营与教学',
+          link:'https://www.meiyangxuexili.com/agent/#/student/feedbackList',
+          linkText:'前往用户反馈管理',
+          rows:[
+            {label:'学生姓名', value:'提交反馈的学生姓名'},
+            {label:'学校/年级/班级', value:'学生所在学校及班级信息'},
+            {label:'反馈课程', value:'反馈内容相关的课程或测评'},
+            {label:'反馈内容', value:'学生/家长填写的具体反馈意见'},
+            {label:'状态', value:'反馈处理状态(待处理/已处理等)'},
+            {label:'反馈时间', value:'提交反馈的具体时间'},
+          ]
+        }
+      }]
+    },{
+      id:'jingpin', name:'精品课程', icon:'fas fa-star', sub:'团辅课件/学科素养课',
+      desc:'课程资源的统一管理入口',
+      items:[{
+        id:'tuanfu', name:'学习力团辅在线课件', icon:'fas fa-users', sub:'团体课',
+        detail:{
+          desc:'三阶段递进式团体辅导课程解决方案，包含标准化课件及教师/学生手册',
+          link:'https://www.meiyangxuexili.com/agent/#/course/teamcourse?id=403',
+          linkText:'前往团辅课件',
+          rows:[
+            {label:'内容', value:'一阶→二阶→三阶递进编排的团体辅导课件'},
+            {label:'配套资源', value:'标准化课件、教师手册、学生手册'},
+          ]
+        }
+      },{
+        id:'yuwen', name:'语文学科在线素养课件', icon:'fas fa-book', sub:'语文素养',
+        detail:{
+          desc:'小学4~6年级语文学科在线素养课课件资源',
+          link:'https://www.meiyangxuexili.com/agent/#/course/teamCourselist?is_free=3',
+          linkText:'前往语文素养课件',
+          rows:[
+            {label:'适用对象', value:'小学4~6年级'},
+            {label:'课程性质', value:'以语文为载体培养学习方法与思维能力，非学科类培训'},
+          ]
+        }
+      },{
+        id:'shuxue', name:'数学学科在线素养课件', icon:'fas fa-calculator', sub:'数学素养',
+        detail:{
+          desc:'小学4~6年级数学学科在线素养课课件资源',
+          link:'https://www.meiyangxuexili.com/agent/#/course/teamCourselist?is_free=3',
+          linkText:'前往数学素养课件',
+          rows:[
+            {label:'适用对象', value:'小学4~6年级'},
+            {label:'课程性质', value:'以数学为载体培养学习方法与思维能力，非学科类培训'},
+          ]
+        }
+      }]
+    },{
+      id:'xiaozhang', name:'校长账号', icon:'fas fa-crown',
+      desc:'拥有教师全部功能 + 教师管理/授权码转让/全局数据。如需统一管理多名教师，可选用校长账号',
+      items:[{
+        id:'xiaozhang-detail', name:'校长账号功能', icon:'fas fa-crown', sub:'额外管理权限',
+        detail:{
+          desc:'校长账号：授权身份为校长的账号，拥有管理名下教师账号的权限。除拥有教师账号的全部功能外，还额外支持以下管理操作。如需增设教师账号可单独购买新增',
+          rows:[
+            {label:'教师信息管理', value:'可查看名下所有教师账号列表，支持新增教师、编辑信息、修改权限、删除账号等操作'},
+            {label:'分校长管理', value:'支持对名下分校长的授权码资源进行充值与回退操作'},
+            {label:'邀请注册', value:'可生成"邀请校长注册"和"邀请老师注册"的专属链接及二维码，方便拓展团队'},
+            {label:'授权码转让', value:'可将校长名下授权码转让给教师使用，灵活调配资源'},
+            {label:'数据查看', value:'可查看名下所有教师的学生数据、授权码使用情况、测评记录等全局数据'},
+          ]
+        }
+      }]
+    }]
+  },
+  {
+    id:'yunying', name:'运营功能', desc:'汇享资源·培训支持·高招信息', count:'3大板块',
+    color:'linear-gradient(135deg,#F56C6C,#F89898)',
+    children:[{
+      id:'huixiang', name:'汇享资源', icon:'fas fa-database',
+      desc:'线上资源融合中心，定期迭代，后台自动同步',
+      items:[{
+        id:'huixiang-detail', name:'汇享资源', icon:'fas fa-database', sub:'6类资源',
+        detail:{
+          desc:'平台免费提供的线上资源融合中心，所有资源会定期迭代，后台自动同步最新内容，无需手动更新',
+          link:'https://www.meiyangxuexili.com/agent/#/news/index?type=2',
+          linkText:'前往汇享资源',
+          rows:[
+            {label:'有效期', value:'合作期内免费无限次下载及观看'},
+            {label:'新手指南', value:'新教师快速上手，涵盖系统各功能模块的详细操作步骤'},
+            {label:'培训视频', value:'供教师自主学习系统使用与运营教学能力'},
+            {label:'招生海报', value:'线下/线上招生引流使用'},
+            {label:'门店设计', value:'机构门店宣传物料设计模板(门头、墙饰等)'},
+            {label:'课案合集', value:'教学备课参考及家长活动素材'},
+            {label:'周边物料', value:'学习力相关周边设计素材(宣传单页、活动物料等)'},
+          ]
+        }
+      }]
+    },{
+      id:'peixun', name:'培训支持', icon:'fas fa-chalkboard-teacher',
+      desc:'每月线上培训 + 每季度线下培训',
+      items:[{
+        id:'peixun-detail', name:'培训支持', icon:'fas fa-chalkboard-teacher', sub:'线上+线下',
+        detail:{
+          desc:'系统性的培训支持体系，帮助合作伙伴快速上手并持续提升',
+          rows:[
+            {label:'线上培训', value:'每月定期开展线上培训课程(请关注合作群通知)'},
+            {label:'线下培训', value:'每季度开展线下培训课程(线下培训费用另计，可根据自身情况选择参加)'},
+          ]
+        }
+      }]
+    },{
+      id:'gaokao', name:'高招信息', icon:'fas fa-graduation-cap',
+      desc:'北师大杨娟教授团队研发，整合全面权威的高考招生信息',
+      items:[{
+        id:'gaokao-detail', name:'高招信息', icon:'fas fa-graduation-cap', sub:'院校/录取/专业/政策',
+        detail:{
+          desc:'由北师大杨娟教授团队研发，整合全面、权威、实时的高考招生相关信息，为学生与家长的升学决策提供数据支持与策略指导',
+          link:'https://www.meiyangxuexili.com/#/school/schoolindex',
+          linkText:'前往高招信息',
+          rows:[
+{label:'院校信息', value:'各高校的办学历史、地理位置、校园文化、师资力量、科研实力、国际合作等信息'},
+            {label:'录取分数信息', value:'提供历年各高校、各专业的录取最低分、平均分、最高分及对应位次等信息'},
+            {label:'专业信息', value:'深入剖析各类专业的培养目标、课程结构、就业前景、行业发展趋势等信息'},
+            {label:'政策资讯', value:'实时更新国家及地方层面的高考改革政策、报名规定、考试安排、加分政策、特殊类型招生政策等动态'},
+          ]
+        }
+      }]
+    }]
+  }
+];
+
+// ===== FAQ Data =====
+const FAQS = [
+  {s:'账号与权限', items:[
+    {q:'教师账号和校长账号有什么区别？',a:'校长账号拥有管理名下所有教师账号的权限，可查看所有教师及教师的学生数据；教师账号管理自己名下学生的数据。'},
+    {q:'学生如何注册？需要注册邀请码吗？',a:'学生通过教师分享的测评链接（必填手机号版）即可自行注册，无需注册邀请码。使用无需手机号版本的链接，需要教师提供注册邀请码（可在【信息管理】→【基本信息管理】内查看）。'},
+    {q:'一个教师账号可以管理多少学生？',a:'不限数量。教师账号可管理名下所有通过其测评链接注册的学生。'},
+  ]},
+  {s:'测评相关', items:[
+    {q:'学生测评结果准确吗？',a:'测评结果的准确性取决于学生作答时的认真程度。建议测评前给学生做测前指导，引导学生放松心态、真实作答。'},
+    {q:'测评报告多久能生成？',a:'学习力综合测评完成后需等待1-2分钟系统生成报告和学习计划；其他测评完成后即时生成。'},
+    {q:'学生做完测评，教师能看到报告吗？',a:'在线简版报告仅学生端可见，完整测评报告需教师登录后台【学生记录管理】→【测评记录管理】，凭下载授权码下载后方可查看。'},
+    {q:'同一个学生可以多次做同一个测评吗？',a:'不可以。学习力综合测评分前测和后测两个版本，为避免学生主观选择"正确答案"，系统内所有测评均只可测试一次。'},
+  ]},
+  {s:'费用与授权码', items:[
+    {q:'哪些测评收费？哪些免费？',a:'学习力综合测评、学科学习力测评在线作答免费，下载完整报告需消耗下载授权码。规划测评需测评码参与。其余7项专项测评全部免费使用，报告免费下载。'},
+    {q:'下载授权码怎么获取？用完了怎么办？',a:'购买账号时会附赠一定份额的下载授权码，用完后可联系总部另行购买。1个下载授权码可兑换1份完整测评报告，学习力综合测评额外赠送解读指南。'},
+    {q:'听课授权码怎么用？有效期多久？',a:'1个听课码解锁一阶学习力在线视频课程（12节课）。教师需先在后台将听课码标记为"售出"状态，学生兑换后课程立即开通。学习计划自兑换之日起1年内有效。'},
+  ]},
+  {s:'课程相关', items:[
+    {q:'在线视频课适合什么年龄段？',a:'学习力在线视频课适合小学4~6年级、初中、高中学生。小学学科素养课专为4~6年级学生设计。'},
+    {q:'课程可以反复观看吗？',a:'可以。在线视频课有效期内（自兑换起1年）支持反复回看。团辅课件和学科素养课在有效期内随时访问。'},
+    {q:'团辅课必须按一阶→二阶→三阶的顺序上吗？',a:'建议按顺序递进，一阶侧重动力激活，二阶深化学习能力，三阶提升高阶策略。但机构也可根据学生实际情况灵活选择某一阶段单独开班。'},
+  ]},
+  {s:'技术与支持', items:[
+    {q:'系统支持哪些设备？',a:'系统基于网页端运行，支持电脑、平板、手机等主流设备的浏览器访问，无需安装额外软件。'},
+    {q:'遇到技术问题怎么办？',a:'请联系群内技术支持，或查看系统【汇享资源】→【新手指南】中的操作教程和常见问题解答。'},
+  ]},
+];
+
+// ===== FAQ Link Map =====
+const FAQ_LINKS = {
+  '信息管理·基本信息管理': ['guanli','xinxi','jiben'],
+  '学生记录管理·测评记录管理': ['guanli','xuesheng','cpjl'],
+  '学生记录管理·学习计划管理': ['guanli','xuesheng','xxjh'],
+  '学生记录管理·用户反馈管理': ['guanli','xuesheng','fkgl'],
+  '授权码管理·听课授权码管理': ['guanli','shouquan','tksq'],
+};
+function faqNavigate(modId, childId, itemId) {
+  closeModalForce();
+  openModule(modId);
+  setTimeout(function(){ openDetail(modId, childId, itemId); }, 400);
+}
+function renderFaqAnswer(text) {
+  // Replace 【X】→【Y】 patterns with clickable links when matched
+  return text.replace(/【([^】]+)】→【([^】]+)】/g, function(match, mod, item) {
+    var key = mod+'·'+item;
+    var link = FAQ_LINKS[key];
+    return link ? '<span class="faq-link" data-click="faqLink" data-args="'+link.join(',')+'">'+match+' <i class="fas fa-external-link-alt" style="font-size:11px"></i></span>' : match;
+  });
+}
+
+// ===== RENDER =====
+function q(sel, parent) { return (parent||document).querySelector(sel); }
+function qa(sel, parent) { return (parent||document).querySelectorAll(sel); }
+
+function renderHome() {
+  q('#pageHome').innerHTML = `
+    <div class="hero">
+      <h2>美羊AI学习力系统</h2>
+      <p>集科学测评、精准诊断、个性化提升、效果验证、运营管理于一体的数字化学习力平台</p>
+      <div class="tags"><span>脑科学</span><span>教育学</span><span>心理学</span><span>管理学</span></div>
+    </div>
+    <div class="section-title">核心功能模块</div>
+    <div class="module-grid">
+      ${MODULES.map((m,i) => `
+        <div class="module-card" data-click="openModule" data-args="${m.id}">
+          <div class="icon" style="background:${m.color}"><i class="${['fas fa-clipboard-check','fas fa-book-open','fas fa-cogs','fas fa-rocket'][i]}"></i></div>
+          <div class="name">${m.name}</div>
+          <div class="desc">${m.desc}</div>
+          <span class="count">${m.count}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="faq-section">
+      <div class="section-title">常见问题</div>
+      ${FAQS.map(function(section, si){
+        return '<div class="faq-category">'+
+          '<div class="faq-cat-title">'+section.s+'</div>'+
+          section.items.map(function(item, ii){
+            return '<div class="faq-item">'+
+              '<div class="faq-q" data-click="toggleFaq" data-args="'+si+','+ii+'">'+
+                '<i class="fas fa-chevron-right"></i>'+item.q+
+              '</div>'+
+              '<div class="faq-a">'+renderFaqAnswer(item.a)+'</div>'+
+            '</div>';
+          }).join('')+
+        '</div>';
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderDetail(moduleId) {
+  const mod = MODULES.find(m => m.id === moduleId);
+  if (!mod) return;
+  q('#pageDetail').innerHTML = `<div class="breadcrumb"><span class="bc-link" data-click="goHome">首页</span><i class="fas fa-chevron-right" style="font-size:10px;color:var(--text-4)"></i><span>${mod.name}</span></div><div class="feature-list">${
+    mod.children.map((child, ci) => {
+      const col = COLORS[ci % COLORS.length];
+      return `<div class="feature-card">
+        <div class="card-header">
+          <div class="fi" style="background:${col}"><i class="${child.icon||'fas fa-circle'}"></i></div>
+          <div class="info">
+            <h3>${child.name}</h3>
+            <p>${child.desc}</p>
+            <div class="meta"><span>${child.items.length}项内容</span></div>
+          </div>
+        </div>
+        <div class="sub-body">
+          ${child.items.map(item =>
+            `<div class="sub-item" data-click="openDetail" data-args="${moduleId},${child.id},${item.id}">
+              <span class="dot"></span>${item.name}<span class="st">${item.sub||''}</span>
+            </div>`
+          ).join('')}
+        </div>
+      </div>`;
+    }).join('')
+  }</div>`;
+
+  showPage('pageDetail');
+  q('#backBtn').classList.add('show');
+  q('#headerTitle').innerHTML = mod.name;
+  q('#headerSub').textContent = '功能详情';
+  q('#headerSub').classList.add('show');
+}
+
+function openModule(moduleId) { renderDetail(moduleId); }
+
+function openDetail(modId, childId, itemId) {
+  const mod = MODULES.find(m => m.id === modId);
+  if (!mod) return;
+  const child = mod.children.find(c => c.id === childId);
+  if (!child) return;
+  const item = (child.items||[]).find(i => i.id === itemId);
+  if (item && item.detail) { _navTrail = [mod.name, child.name, item.name]; showModal(item.detail, item.name, item.icon, modId === 'ceping'); }
+}
+
+function openFirstItem(modId, childId) {
+  const mod = MODULES.find(m => m.id === modId);
+  if (!mod) return;
+  const child = mod.children.find(c => c.id === childId);
+  if (!child || !child.items.length) return;
+  const item = child.items[0];
+  if (item.detail) { _navTrail = [mod.name, child.name, item.name]; showModal(item.detail, item.name, item.icon, modId === 'ceping'); }
+}
+
+let _colorIdx = 0;
+function nextColor() {
+  const c = COLORS[_colorIdx % COLORS.length];
+  _colorIdx++;
+  return c;
+}
+function showModal(detail, title, icon, showInvite) {
+  const mb = q('#modalContent .modal-bd');
+  let bcHtml = '';
+  if (_navTrail.length) {
+    bcHtml = '<div class="m-breadcrumb">' + _navTrail.slice(0,-1).map(function(n){return '<span>'+n+'</span>';}).join('<i class="fas fa-chevron-right" style="font-size:9px"></i>') + '</div>';
+  }
+  mb.innerHTML = bcHtml + `
+    ${icon ? '<div class="m-icon" style="background:'+nextColor()+'"><i class="'+icon+'"></i></div>' : ''}
+    <h2>${title}</h2>
+    <div class="m-desc">${detail.desc||''}${showInvite ? '<br><span data-click="extLink" data-args="'+(detail.inviteLink||'https://www.meiyangxuexili.com/agent/#/baseinfo/Assinvite')+'" style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;color:var(--primary);font-size:12px;cursor:pointer;border:1px solid var(--primary);border-radius:4px;padding:3px 10px"><i class="fas fa-external-link-alt" style="font-size:11px"></i> '+(detail.inviteText||'前往测评邀请链接')+'</span>' : ''}${detail.link ? '<br><span data-click="extLink" data-args="'+detail.link+'" style="display:inline-flex;align-items:center;gap:4px;margin-top:8px;color:var(--primary);font-size:12px;cursor:pointer;border:1px solid var(--primary);border-radius:4px;padding:3px 10px"><i class="fas fa-external-link-alt" style="font-size:11px"></i> '+(detail.linkText||'前往后台')+'</span>' : ''}</div>
+    ${detail.rows ? '<div class="m-section">'+detail.rows.map(function(r){
+      var val = r.value;
+      if (r.link) {
+        val = '<span data-click="extLink" data-args="'+r.link+'" style="color:var(--primary);text-decoration:underline;cursor:pointer">'+r.value+' <i class="fas fa-external-link-alt" style="font-size:11px"></i></span>';
+      } else if (r.label === '指导语') {
+        var prefix = '参考';
+        var suffix = '，也可在系统【汇享资源】→【新手指南】中查看';
+        var linkText = r.value.slice(prefix.length, -suffix.length);
+        val = prefix+'<span data-click="extLink" data-args="https://www.meiyangxuexili.com/uploads/20260518/e28728d5d1bcfe67eebf0e6a0c0263b5.pdf" style="color:var(--primary);text-decoration:underline;cursor:pointer">'+linkText+' <i class="fas fa-external-link-alt" style="font-size:11px"></i></span>'+suffix;
+      } else if (r.label === '测评邀请链接') {
+        val = '<span data-click="extLink" data-args="https://www.meiyangxuexili.com/agent/#/baseinfo/Assinvite" style="color:var(--primary);text-decoration:underline;cursor:pointer">'+r.value+' <i class="fas fa-external-link-alt" style="font-size:11px"></i></span>';
+      }
+      return '<div class="m-row"><div class="label">'+r.label+'</div><div class="value">'+val+'</div></div>';
+    }).join('')+'</div>' : ''}
+    <button class="close-btn" data-click="closeModalForce">关 闭</button>
+  `;
+  q('#modalOverlay').classList.add('show');
+}
+
+// Modal overlay: close only when clicking the backdrop, not the modal itself
+q('#modalOverlay').addEventListener('click', function(e) {
+  if (e.target === q('#modalOverlay')) closeModalForce();
+});
+
+// Modal content event delegation (for buttons inside modal)
+q('#modalContent').addEventListener('click', function(e) {
+  const t = e.target.closest('[data-click]');
+  if (!t) return;
+  var act = t.dataset.click;
+  var args = t.dataset.args;
+  if (act === 'closeModalForce') closeModalForce();
+  else if (act === 'extLink' && args) showConfirm('即将前往该功能页面，是否继续？', function(){ window.open(args, '_blank'); });
+  else if (act === 'copyPhone') {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText('18515817420').then(function(){ showToast('已复制，请打开微信搜索添加'); }).catch(function(){ showToast('微信号: 18515817420'); });
+    } else {
+      showToast('微信号: 18515817420');
+    }
+  }
+});
+
+function closeModalForce() { q('#modalOverlay').classList.remove('show'); }
+
+function showPage(id) {
+  qa('.page').forEach(p => p.classList.remove('active'));
+  q('#'+id).classList.add('active');
+}
+
+// ===== Confirm Dialog =====
+var _confirmCallback = null;
+function showConfirm(msg, onConfirm) {
+  _confirmCallback = onConfirm;
+  q('#confirmMsg').textContent = msg;
+  q('#confirmOverlay').classList.add('show');
+}
+q('#confirmOk').addEventListener('click', function(){
+  q('#confirmOverlay').classList.remove('from-header','show');
+  if (_confirmCallback) _confirmCallback();
+});
+q('#confirmCancel').addEventListener('click', function(){
+  q('#confirmOverlay').classList.remove('from-header','show');
+  _confirmCallback = null;
+});
+q('#confirmOverlay').addEventListener('click', function(e) {
+  if (e.target === q('#confirmOverlay')) {
+    q('#confirmOverlay').classList.remove('from-header','show');
+    _confirmCallback = null;
+  }
+});
+
+// Event delegation — handles all clicks in the main area
+// Avoids issues with inline onclick in innerHTML
+// Toast notification
+function showToast(msg) {
+  var el = q('#toast');
+  el.textContent = msg;
+  el.style.animation = 'toastIn 0.25s ease forwards';
+  el.style.opacity = '1';
+  clearTimeout(el._hide);
+  el._hide = setTimeout(function(){
+    el.style.animation = 'toastOut 0.25s ease forwards';
+    el.style.opacity = '0';
+  }, 2000);
+}
+
+q('#mainContent').addEventListener('click', function(e) {
+  const t = e.target.closest('[data-click]');
+  if (!t) return;
+  const action = t.dataset.click;
+  const args = t.dataset.args ? t.dataset.args.split(',') : [];
+  switch (action) {
+    case 'openModule':    openModule(args[0]); break;
+    case 'openDetail':    openDetail(args[0],args[1],args[2]); break;
+    case 'openFirstItem': openFirstItem(args[0],args[1]); break;
+    case 'closeModalForce': closeModalForce(); break;
+    case 'toggleFaq': {
+      const faqItem2 = t.closest('.faq-item');
+      if (faqItem2) {
+        faqItem2.querySelector('.faq-a').classList.toggle('show');
+        faqItem2.querySelector('.faq-q i').classList.toggle('open');
+      }
+      break;
+    }
+    case 'faqLink':
+      closeModalForce();
+      openModule(args[0]);
+      setTimeout(function(){ openDetail(args[0],args[1],args[2]); }, 400);
+      break;
+    case 'extLink':
+      var url = t.dataset.args;
+      if (url) showConfirm('即将前往该功能页面，是否继续？', function(){ window.open(url, '_blank'); });
+      break;
+    case 'goHome':
+      goBack(); break;
+    case 'scrollToTop':
+      q('#mainContent').scrollTo({ top: 0, behavior: 'smooth' }); break;
+    case 'copyPhone': {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText('18515817420').then(function(){ showToast('已复制，请打开微信搜索添加'); }).catch(function(){ showToast('微信号: 18515817420'); });
+      } else {
+        showToast('微信号: 18515817420');
+      }
+      break;
+    }
+  }
+});
+
+// Back to top — direct listener (outside mainContent)
+q('#backToTop').addEventListener('click', function() {
+  q('#mainContent').scrollTo({ top: 0, behavior: 'smooth' });
+});
+q('#mainContent').addEventListener('scroll', function() {
+  q('#backToTop').classList.toggle('show', this.scrollTop > 300);
+  // 首次滑到底部时弹出二维码
+  if (!_qrAutoShown && this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
+    _qrAutoShown = true;
+    showQRModal();
+  }
+});
+
+// QR code modal
+var _qrAutoShown = false;
+function showQRModal() {
+  var mb = q('#modalContent .modal-bd');
+  mb.innerHTML = '<div style="text-align:center;padding:4px 0"><p style="margin:0 0 4px;font-size:16px;color:var(--text-1)">更多系统使用问题，请联系<br><span data-click="copyPhone" style="color:var(--primary);cursor:pointer;border-bottom:1px dashed var(--primary);font-size:18px;font-weight:600">杨扬·美羊运营官</span></p><p style="margin:0 0 8px;font-size:13px;color:var(--text-3)">点击复制微信号 · 打开微信搜索添加</p><img src="'+QR_DATA+'" alt="二维码" style="max-width:100%;width:160px;border-radius:8px"></div><button class="close-btn" data-click="closeModalForce">关 闭</button>';
+  q('#modalOverlay').classList.add('show');
+}
+q('#qrBtn').addEventListener('click', function() { _qrAutoShown = true; showQRModal(); });
+
+// Header 前往后台 — direct listener (outside mainContent)
+q('.header-link-btn').addEventListener('click', function() {
+  q('#confirmOverlay').classList.add('from-header');
+  showConfirm('即将前往美羊AI学习力系统后台管理系统', function(){ window.open('https://www.meiyangxuexili.com/agent/#/index', '_blank'); });
+});
+
+// Back button
+q('#backBtn').addEventListener('click', goBack);
+
+// Search button
+q('#searchBtn').addEventListener('click', toggleSearch);
+q('#searchInput').addEventListener('input', function() { doSearch(this.value); });
+
+function goBack() {
+  if (q('#pageDetail').classList.contains('active')) {
+    q('#backBtn').classList.remove('show');
+    q('#headerTitle').innerHTML = '<img src="https://www.meiyangxuexili.com/agent/img/jst_logo.Bs_ur0mu.png" style="height:32px;vertical-align:middle" alt="美羊AI学习力系统">';
+    q('#headerSub').textContent = '北师大杨娟教授团队研发';
+    q('#headerSub').classList.remove('show');
+    showPage('pageHome');
+  }
+}
+
+// ===== Search =====
+let searchVisible = false;
+function toggleSearch() {
+  searchVisible = !searchVisible;
+  q('#searchBar').classList.toggle('show', searchVisible);
+  if (searchVisible) q('#searchInput').focus();
+  else q('#searchInput').value = '';
+}
+
+function flattenItems() {
+  const r = [];
+  MODULES.forEach(m => m.children.forEach(c => (c.items||[]).forEach(i => r.push({item:i,child:c,mod:m}))));
+  return r;
+}
+
+function doSearch(keyword) {
+  const overlay = q('#modalOverlay');
+  const mb = q('#modalContent .modal-bd');
+  const t = keyword.trim().toLowerCase();
+  if (!t) { if (overlay.classList.contains('show') && mb.querySelector('.search-result')) closeModalForce(); return; }
+  const results = flattenItems().filter(function(r) {
+    if (r.item.name.toLowerCase().includes(t)) return true;
+    if ((r.item.detail&&r.item.detail.desc||'').toLowerCase().includes(t)) return true;
+    if (r.item.detail && r.item.detail.rows) return r.item.detail.rows.some(function(row){ return (row.label||'').toLowerCase().includes(t) || (row.value||'').toLowerCase().includes(t); });
+    return false;
+  });
+  let html = `<h2>搜索结果</h2><div class="m-desc">找到 ${results.length} 个相关内容</div><div class="search-result">`;
+  if (!results.length) {
+    html += `<div class="sr-empty">未找到相关内容，试试其他关键词</div>`;
+  } else {
+    results.forEach((r,i) => {
+      html += `<div class="sr-item" data-click="searchResult" data-args="${r.mod.id},${r.child.id},${r.item.id}">
+        <div class="si" style="background:${COLORS[i%COLORS.length]}"><i class="${r.item.icon||'fas fa-circle'}"></i></div>
+        <div class="stxt"><div class="name">${r.item.name}</div><div class="from">${r.mod.name} > ${r.child.name}</div></div>
+        <i class="fas fa-chevron-right" style="color:var(--text-4);font-size:12px"></i>
+      </div>`;
+    });
+  }
+  html += `</div><button class="close-btn" data-click="closeModalForce">关 闭</button>`;
+  mb.innerHTML = html;
+  overlay.classList.add('show');
+}
+
+// Search result click handler
+document.addEventListener('click', function(e) {
+  const t = e.target.closest('[data-click="searchResult"]');
+  if (!t) return;
+  const args = t.dataset.args.split(',');
+  closeModalForce();
+  openModule(args[0]);
+  setTimeout(() => openDetail(args[0], args[1], args[2]), 350);
+});
+
+renderHome();
+</script>
+</body>
+</html>
